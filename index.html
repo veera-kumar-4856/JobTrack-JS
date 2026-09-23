@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobTrack</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- Header -->
+<header class="header">
+    <div class="logo">
+        JobTrack
+    </div>
+
+    <button id="addJobBtn">
+        + Add Application
+    </button>
+</header>
+
+<!-- Main Content -->
+<main class="container">
+
+<!-- Welcome Section -->
+<section class="welcome">
+    <h1>Job Application Tracker</h1>
+    <p>Track your job applications, interviews and offers in one place.</p>
+</section>
+
+<!-- Dashboard Statistics -->
+<section class="stats">
+    <div class="stat-card">
+        <h3>Total Applications</h3>
+        <p id="totalApplications">0</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Applied</h3>
+        <p id="appliedCount">0</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Interviews</h3>
+        <p id="interviewCount">0</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Offers</h3>
+        <p id="offerCount">0</p>
+    </div>
+</section>
+
+<!-- Applications Section -->
+<section class="applications-section">
+
+    <div class="section-header">
+        <h2>My Applications</h2>
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search company or role..."
+        >
+
+        <select id="statusFilter">
+            <option value="All">All Status</option>
+            <option value="Applied">Applied</option>
+            <option value="Interview">Interview</option>
+            <option value="Offer">Offer</option>
+            <option value="Rejected">Rejected</option>
+        </select>
+    </div>
+
+<!-- Application List -->
+<div id="applicationList">
+    <p class="empty-message">No applications added yet.</p>
+</div>
+
+<!-- Add / Edit Application Form -->
+<div id="applicationFormContainer" class="form-container">
+
+    <div class="form-header">
+        <h2>Add Job Application</h2>
+
+        <button id="closeFormBtn" type="button">
+            ×
+        </button>
+    </div>
+
+    <form id="applicationForm">
+
+        <div class="form-group">
+            <label for="company">Company Name</label>
+            <input
+                type="text"
+                id="company"
+                placeholder="e.g. Zoho"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="role">Job Role</label>
+            <input
+                type="text"
+                id="role"
+                placeholder="e.g. Software Developer"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input
+                type="text"
+                id="location"
+                placeholder="e.g. Chennai"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="appliedDate">Applied Date</label>
+            <input
+                type="date"
+                id="appliedDate"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="status">Application Status</label>
+
+            <select id="status">
+                <option value="Applied">Applied</option>
+                <option value="Interview">Interview</option>
+                <option value="Offer">Offer</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="jobUrl">Job URL</label>
+            <input
+                type="url"
+                id="jobUrl"
+                placeholder="https://..."
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea
+                id="notes"
+                placeholder="Interview details, recruiter information, etc."
+            ></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" id="cancelFormBtn">
+                Cancel
+            </button>
+
+            <button type="submit" id="saveApplicationBtn">
+                Save Application
+            </button>
+        </div>
+
+    </form>
+</div>
+
+</section>
+
+</main>
+
+<script src="script.js"></script>
+
+</body>
+</html>
