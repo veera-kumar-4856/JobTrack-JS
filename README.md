@@ -2,6 +2,10 @@
 
 JobTrack is a simple job application tracking web application that helps users manage and track their job applications, interviews and offers in one place.
 
+## Live Demo
+
+[View JobTrack JS](https://veera-kumar-4856.github.io/JobTrack-JS/)
+
 ## Features
 
 - Add job applications
