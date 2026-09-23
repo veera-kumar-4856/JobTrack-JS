@@ -7,6 +7,7 @@ const applicationForm = document.getElementById("applicationForm");
 const applicationList = document.getElementById("applicationList");
 const searchInput = document.getElementById("searchInput");
 const statusFilter = document.getElementById("statusFilter");
+const formTitle = document.getElementById("formTitle");
 
 const totalApplications = document.getElementById("totalApplications");
 const appliedCount = document.getElementById("appliedCount");
@@ -61,35 +62,97 @@ function updateStatistics() {
 function displayApplications(list = applications) {
     applicationList.innerHTML = "";
 
+    if (list.length === 0) {
+        applicationList.innerHTML = `
+            <p class="empty-message">No applications found.</p>
+        `;
+        return;
+    }
+
     list.forEach(function(application) {
         const applicationCard = document.createElement("div");
-
         applicationCard.classList.add("application-card");
 
-        applicationCard.innerHTML = `
-            <h3>${application.company}</h3>
-            <p>${application.role}</p>
-            <p>${application.location}</p>
+        const company = document.createElement("h3");
+        company.textContent = application.company;
 
-            <span class="status-badge ${application.status.toLowerCase()}">
-                ${application.status}
-            </span>
+        const role = document.createElement("p");
+        role.textContent = application.role;
 
-            <p>Applied: ${application.appliedDate}</p>
+        const location = document.createElement("p");
+        location.textContent = application.location;
 
-            ${application.notes ? `<p class="application-notes">${application.notes}</p>` : ""}
+        const status = document.createElement("span");
+        status.textContent = application.status;
 
-            <div class="card-actions">
-                ${application.jobUrl ? `<a href="${application.jobUrl}" target="_blank">View Job</a>` : ""}
-                <button class="edit-btn" data-id="${application.id}">Edit</button>
-                <button class="delete-btn" data-id="${application.id}">Delete</button>
-            </div>
-        `;
+        const validStatuses = [
+            "Applied",
+            "Interview",
+            "Offer",
+            "Rejected"
+        ];
 
+        const statusClass = validStatuses.includes(application.status)
+            ? application.status.toLowerCase()
+            : "applied";
+
+        status.classList.add("status-badge", statusClass);
+
+        const appliedDate = document.createElement("p");
+        appliedDate.textContent = `Applied: ${application.appliedDate}`;
+
+        const cardActions = document.createElement("div");
+        cardActions.classList.add("card-actions");
+
+        if (application.jobUrl) {
+            try {
+                const jobUrl = new URL(application.jobUrl);
+
+                if (jobUrl.protocol === "http:" || jobUrl.protocol === "https:") {
+                    const jobLink = document.createElement("a");
+
+                    jobLink.textContent = "View Job";
+                    jobLink.href = jobUrl.href;
+                    jobLink.target = "_blank";
+                    jobLink.rel = "noopener noreferrer";
+
+                    cardActions.appendChild(jobLink);
+                }
+            } catch (error) {
+            }
+        }
+
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+        editButton.classList.add("edit-btn");
+        editButton.dataset.id = application.id;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.classList.add("delete-btn");
+        deleteButton.dataset.id = application.id;
+
+        cardActions.append(editButton, deleteButton);
+
+        applicationCard.append(
+            company,
+            role,
+            location,
+            status,
+            appliedDate
+        );
+
+        if (application.notes) {
+            const notes = document.createElement("p");
+
+            notes.textContent = application.notes;
+            notes.classList.add("application-notes");
+
+            applicationCard.appendChild(notes);
+        }
+
+        applicationCard.appendChild(cardActions);
         applicationList.appendChild(applicationCard);
-
-        const editButton = applicationCard.querySelector(".edit-btn");
-        const deleteButton = applicationCard.querySelector(".delete-btn");
 
         // Delete Application
         deleteButton.addEventListener("click", function() {
@@ -112,7 +175,7 @@ function displayApplications(list = applications) {
                 JSON.stringify(applications)
             );
 
-            displayApplications();
+            filterApplications();
             updateStatistics();
         });
 
@@ -121,10 +184,15 @@ function displayApplications(list = applications) {
             const id = Number(editButton.dataset.id);
 
             editingId = id;
+            formTitle.textContent = "Edit Job Application";
 
             const applicationToEdit = applications.find(function(application) {
                 return application.id === id;
             });
+
+            if (!applicationToEdit) {
+                return;
+            }
 
             document.getElementById("company").value =
                 applicationToEdit.company;
@@ -154,6 +222,9 @@ function displayApplications(list = applications) {
 
 // Open Application Form
 addJobBtn.addEventListener("click", function() {
+    applicationForm.reset();
+    editingId = null;
+    formTitle.textContent = "Add Job Application";
     applicationFormContainer.style.display = "block";
 });
 
@@ -161,12 +232,14 @@ addJobBtn.addEventListener("click", function() {
 closeFormBtn.addEventListener("click", function() {
     applicationForm.reset();
     editingId = null;
+    formTitle.textContent = "Add Job Application";
     applicationFormContainer.style.display = "none";
 });
 
 cancelFormBtn.addEventListener("click", function() {
     applicationForm.reset();
     editingId = null;
+    formTitle.textContent = "Add Job Application";
     applicationFormContainer.style.display = "none";
 });
 
@@ -174,13 +247,13 @@ cancelFormBtn.addEventListener("click", function() {
 applicationForm.addEventListener("submit", function(event) {
     event.preventDefault();
 
-    const company = document.getElementById("company").value;
-    const role = document.getElementById("role").value;
-    const location = document.getElementById("location").value;
+    const company = document.getElementById("company").value.trim();
+    const role = document.getElementById("role").value.trim();
+    const location = document.getElementById("location").value.trim();
     const appliedDate = document.getElementById("appliedDate").value;
     const status = document.getElementById("status").value;
-    const jobUrl = document.getElementById("jobUrl").value;
-    const notes = document.getElementById("notes").value;
+    const jobUrl = document.getElementById("jobUrl").value.trim();
+    const notes = document.getElementById("notes").value.trim();
 
     const application = {
         id: editingId !== null ? editingId : Date.now(),
@@ -200,7 +273,10 @@ applicationForm.addEventListener("submit", function(event) {
             return application.id === editingId;
         });
 
-        applications[index] = application;
+        if (index !== -1) {
+            applications[index] = application;
+        }
+
         editingId = null;
     }
 
@@ -209,10 +285,11 @@ applicationForm.addEventListener("submit", function(event) {
         JSON.stringify(applications)
     );
 
-    displayApplications();
+    filterApplications();
     updateStatistics();
 
     applicationForm.reset();
+    formTitle.textContent = "Add Job Application";
     applicationFormContainer.style.display = "none";
 });
 
